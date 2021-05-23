@@ -2,7 +2,8 @@ import {
   USER_LOGGED_IN, 
   USER_LOGGED_OUT, 
   LOADING_USER,
-  USER_LOADED 
+  USER_LOADED,
+  USER_CHECK_PASSWORD 
 } from './actionsTypes'
 import axios from 'axios'
 import { setMessage } from './message'
@@ -66,6 +67,15 @@ export const userLoaded = () => {
     }
 }
 
+export const checkCodPassword = user => {
+  return {
+      type: USER_CHECK_PASSWORD,
+      payload: user
+  }
+}
+
+
+
 export const login = user => {
   const url = `${server}/signin`
    
@@ -111,7 +121,7 @@ export const login = user => {
 }
 
 
-export const resetPassword = user => {
+export const sendCodPassword = user => {
     const url = `${server}/send`
    
     const dados = {    
@@ -128,18 +138,101 @@ export const resetPassword = user => {
       dispatch(loadingUser())
       axios.post(url, dados, config)    
       .then( res => { 
-        console.log(res)
+        console.log(res)        
         dispatch(setMessage({
           title: 'Mensagem',
           text: 'Verifique o seu e-mail!'
         })) 
-        dispatch(userLoaded()) 
+        user.email = res.data.email
+        user.id = res.data.id
+        dispatch(checkCodPassword(user))         
    
       }).catch(err => {
         dispatch(setMessage({
             title: 'Erro',
-            text: 'E-mail inválido'
+            text: err.response.data
         }))
       })   
     }
+}
+
+
+export const verifyCodPassword = user => {
+  const url = `${server}/checkCod`
+ 
+  const dados = {    
+    email: user.email,
+    id: user.id,
+    codPassword: user.codPassword          
+  }
+ 
+  const config = {
+    headers: {
+        'Content-Type': 'application/json',
+    }
+  }
+    
+  return dispatch => {
+    dispatch(loadingUser())
+    console.log(dados)
+    axios.post(url, dados, config)    
+    .then( res => { 
+      console.log(res)
+      user.email = res.data.email
+      dispatch(setMessage({
+        title: 'Mensagem',
+        text: 'Adicione uma nova senha!'
+      })) 
+      user.email = res.data.email
+      user.id = res.data.id
+      console.log(user)
+      dispatch(checkCodPassword(user)) 
+            
+ 
+    }).catch(err => {
+      console.log(err.response.data)
+      dispatch(setMessage({
+          title: 'Erro',
+          text:  err.response.data
+      }))
+    })   
+  }
+}
+
+export const updatePasswordUser = user => {
+  const url = `${server}/updatePassword`
+ 
+  const dados = {    
+    email: user.email,
+    id: user.id,
+    codPassword: user.codPassword,
+    password: user.password          
+  }
+ 
+  const config = {
+    headers: {
+        'Content-Type': 'application/json',
+    }
+  }
+    
+  return dispatch => {
+    dispatch(loadingUser())
+    console.log(dados)
+    axios.post(url, dados, config)    
+    .then( res => { 
+      console.log(res)     
+      dispatch(setMessage({
+        title: 'Mensagem',
+        text: 'Alterada a senha com sucesso!'
+      })) 
+      dispatch(userLoaded()) 
+ 
+    }).catch(err => {
+      dispatch(setMessage({
+          title: 'Erro',
+          text:  err.response.data
+      }))
+    })   
+  }
+  
 }

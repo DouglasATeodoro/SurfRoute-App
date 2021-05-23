@@ -2,14 +2,16 @@ import {
     USER_LOGGED_IN,
     USER_LOGGED_OUT,
     LOADING_USER,
-    USER_LOADED
+    USER_LOADED,
+    USER_CHECK_PASSWORD
 } from '../actions/actionsTypes'
 
 const initialState = {
+    id: null,
     name: null,
     email: null,
     isLoading: false,
-    token: null,
+    token: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -17,6 +19,7 @@ const reducer = (state = initialState, action) => {
         case USER_LOGGED_IN:
             return {
                 ...state,
+                id: action.payload.id,
                 name: action.payload.name,
                 email: action.payload.email,
                 token: action.payload.token,
@@ -33,6 +36,14 @@ const reducer = (state = initialState, action) => {
         case USER_LOADED:
             return {
                 ...state,
+                isLoading: false
+            }
+        case USER_CHECK_PASSWORD:
+            return {
+                ...state,
+                id: action.payload.id,
+                name: action.payload.name,
+                email: action.payload.email,
                 isLoading: false
             }
         default:

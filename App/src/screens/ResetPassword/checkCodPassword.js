@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import React,{ Component } from 'react'
-import { sendCodPassword } from '../../store/actions/user'
+import { verifyCodPassword } from '../../store/actions/user'
 
 
 import {
@@ -16,13 +16,15 @@ import {
 import SignInput from '../../components/SignInput';
 
 
-import EmailIcon from '../../assets/email.svg';
+import CodigoIcon from '../../assets/codigo.svg';
 
 
 class index extends Component{
 
-    state = {        
-        email: ''        
+    state = {  
+        id: this.props.id,      
+        email: this.props.email,
+        codPassword: ''        
     }    
 
     toBack = () => {                
@@ -34,40 +36,43 @@ class index extends Component{
     componentDidUpdate = prevProps => {
         if (prevProps.isLoading && !this.props.isLoading) {
             this.props.navigation.reset({
-                routes:[{name:'CheckCodPassword'}]
+                routes:[{name:'ChangePassword'}]
                      });
         }
     }
 
-    reset = async () => {        
-        await this.props.onResetePassword({ ...this.state })                                  
+    checkCod = async () => {        
+        await this.props.onCheckCodPassword({ ...this.state })                                  
     }
 
     render(){
         const validations = []
-        validations.push(this.state.email && this.state.email.includes('@'))
+        validations.push(this.state.codPassword && this.state.codPassword.length >= 4)
         
         const validForm = validations.reduce((t, a) => t && a)
-       
+        
+        const msm = `Digite o código!`
+
         return(
             <Container>
             {/* <BarberLogo width="100%" height="160" /> */}
             {/* <AccountIcon style={{ opacity: 0.5 }}  width="100%" height="160"></AccountIcon> */}
                 <InputArea>
                     <SignMessageButton >
-                        <SignMessageButtonTextBold>Será enviado um código no seu e-mail!</SignMessageButtonTextBold>
+                        <SignMessageButtonTextBold>{msm}</SignMessageButtonTextBold>
+                       
                     </SignMessageButton>
                     <SignInput
-                        IconSvg={EmailIcon}
-                        placeholder="Digite seu e-mail"
-                        value={this.state.email}
-                        onChangeText={email => this.setState({ email })}
+                        IconSvg={CodigoIcon}
+                        placeholder="Digite o código"
+                        value={this.state.codPassword}
+                        onChangeText={codPassword => this.setState({ codPassword })}
                     />
                     
                     <CustomButton 
-                            onPress={ this.reset } 
+                            onPress={ this.checkCod } 
                             disabled={!validForm}  style={[validForm ? {} : { backgroundColor: '#AAA' }]}>
-                        <CustomButtonText>ENVIAR</CustomButtonText>
+                        <CustomButtonText>Verificar</CustomButtonText>
                         
                     </CustomButton>
                     
@@ -84,13 +89,15 @@ class index extends Component{
 
 const mapStateToProps = ({ user }) => {
     return {
-        isLoading: user.isLoading
+        isLoading: user.isLoading,
+        email : user.email,
+        id: user.id
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onResetePassword: user => dispatch(sendCodPassword(user))        
+        onCheckCodPassword: user => dispatch(verifyCodPassword(user))        
     }
 }
 
