@@ -48,12 +48,12 @@ yarn add react-redux
 --Thunk
 yarn add redux-thunk
 
+--Usar camera e cortar imagem
+npm i react-native-image-crop-picker --save
 
 ### Gerar .apk
 #### NÃO FAZER A ATUALIZAÇÃO DA VERSÃO DO GRADLEW DEU PAU TIVE QUE VOLTAR
 https://www.youtube.com/watch?v=HuPK62LHCms
-
-
 
 Gerando o APK e AAB para instalar em outros dispositivos - Curso de React Native - Aula 46
 
